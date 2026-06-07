@@ -89,7 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to submit form to database');
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || 'Failed to submit form to database');
                 }
 
                 showToast();
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 charCountSpan.textContent = '0';
             } catch (error) {
                 console.error('Error submitting form:', error);
-                alert('There was an issue submitting your form. Please check your database connection.');
+                alert('Database Error: ' + error.message + '\n\nMake sure your Vercel Postgres Database is connected in your Vercel project Settings > Storage!');
             } finally {
                 // Restore button
                 submitBtn.innerHTML = originalBtnText;

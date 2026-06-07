@@ -23,7 +23,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Insert into Vercel Postgres
+    // 1. Ensure the table exists automatically so you don't have to create it manually in the dashboard!
+    await sql`
+      CREATE TABLE IF NOT EXISTS diet_requisitions (
+          id SERIAL PRIMARY KEY,
+          full_name VARCHAR(50) NOT NULL,
+          age INT NOT NULL,
+          test_score INT NOT NULL CHECK (test_score >= 0 AND test_score <= 99)
+      );
+    `;
+
+    // 2. Insert into Vercel Postgres
     await sql`
       INSERT INTO diet_requisitions (full_name, age, test_score)
       VALUES (${fullName}, ${ageVal}, ${scoreVal})
@@ -32,6 +42,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ message: 'Success' });
   } catch (error) {
     console.error('Database Error:', error);
-    return res.status(500).json({ error: 'Failed to insert data into database' });
+    // Send the exact error message to the frontend so we know what's wrong!
+    return res.status(500).json({ error: error.message || 'Failed to insert data into database' });
   }
 }
