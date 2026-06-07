@@ -1,0 +1,12 @@
+{
+  "name": "diet-requisition",
+  "version": "1.0.0",
+  "description": "Diet Requisition Form with Vercel Postgres",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.9.0"
+  }
+}

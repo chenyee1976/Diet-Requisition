@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle form submit
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         let isValid = true;
@@ -70,9 +70,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (isValid) {
-            showToast();
-            form.reset();
-            charCountSpan.textContent = '0';
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            try {
+                // Show loading state
+                submitBtn.innerHTML = '<span class="btn-text">Submitting...</span>';
+                submitBtn.disabled = true;
+
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fullName: fullNameInput.value.trim(),
+                        age: ageVal,
+                        testScore: scoreVal
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to submit form to database');
+                }
+
+                showToast();
+                form.reset();
+                charCountSpan.textContent = '0';
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('There was an issue submitting your form. Please check your database connection.');
+            } finally {
+                // Restore button
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
         }
     });
 
